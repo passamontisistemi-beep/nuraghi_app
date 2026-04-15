@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nuraghi Premium QR</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+
+<body class="bg-[#0f172a] text-white min-h-screen p-6">
+  <div class="max-w-6xl mx-auto space-y-6">
+
+    <header class="flex flex-col md:flex-row justify-between items-center gap-4">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-bold">
+          PASSAMONTI <span class="font-normal">COMMUNICATION</span>
+        </h1>
+        <p class="text-slate-300 mt-2">
+          Versione HTML Premium richiamabile con QR Code
+        </p>
+      </div>
+
+      <a id="openLink"
+         href="#"
+         class="px-5 py-3 rounded-2xl bg-amber-300 text-black font-semibold shadow-lg">
+         Apri App
+      </a>
+    </header>
+
+    <section class="grid md:grid-cols-2 gap-6">
+
+      <!-- Colonna testo -->
+      <div class="rounded-3xl bg-slate-800 p-6 shadow-xl">
+        <h2 class="text-2xl font-bold text-amber-300 mb-4">
+          Presentazione
+        </h2>
+
+        <p class="text-slate-300 leading-relaxed">
+          Una webapp premium per promuovere i Nuraghi, i comuni vicini,
+          il turismo culturale, i sentieri naturalistici e la candidatura UNESCO.
+        </p>
+
+        <ul class="mt-6 space-y-3 text-slate-200">
+          <li>• Design outdoor ad alta leggibilità</li>
+          <li>• QR Code per accesso immediato</li>
+          <li>• Ottimizzata per smartphone</li>
+          <li>• Perfetta per fiere ed eventi</li>
+          <li>• Ideale per comuni e cooperative</li>
+        </ul>
+      </div>
+
+      <!-- Colonna QR -->
+      <div class="rounded-3xl bg-slate-800 p-6 shadow-xl flex flex-col items-center justify-center">
+        <canvas id="qr"></canvas>
+
+        <p class="mt-4 text-sm text-slate-400 text-center">
+          Scansiona il QR Code per aprire la webapp
+        </p>
+      </div>
+
+    </section>
+
+    <section class="grid md:grid-cols-3 gap-4">
+
+      <div class="bg-slate-800 rounded-3xl p-5">
+        <h3 class="text-xl font-bold text-amber-300 mb-2">Turismo</h3>
+        <p class="text-slate-300">
+          Valorizzazione dei nuraghi e dei paesi vicini.
+        </p>
+      </div>
+
+      <div class="bg-slate-800 rounded-3xl p-5">
+        <h3 class="text-xl font-bold text-amber-300 mb-2">Lavoro</h3>
+        <p class="text-slate-300">
+          Nuove opportunità per giovani guide, servizi e imprese locali.
+        </p>
+      </div>
+
+      <div class="bg-slate-800 rounded-3xl p-5">
+        <h3 class="text-xl font-bold text-amber-300 mb-2">UNESCO</h3>
+        <p class="text-slate-300">
+          Strumento digitale per supportare la candidatura internazionale.
+        </p>
+      </div>
+
+    </section>
+
+    <footer class="pt-6 border-t border-slate-700 text-sm text-slate-400 text-center">
+      PASSAMONTI COMMUNICATION • WebApp dimostrativa Nuraghi Sardegna
+    </footer>
+
+  </div>
+
+  <script>
+    const url = window.location.href;
+
+    document.getElementById("openLink").href = url;
+
+    QRCode.toCanvas(
+      document.getElementById("qr"),
+      url,
+      {
+        width: 240,
+        margin: 2
+      }
+    );
+  </script>
+
+</body>
+</html>
