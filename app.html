@@ -34,14 +34,11 @@ RSS Cultura • Turismo • Giovani • UNESCO • Nuraghi • Comuni della Sard
 
 <div class="grid lg:grid-cols-3 gap-4">
 
-<!-- MAPPA -->
 <div class="lg:col-span-2">
 <div id="map" class="h-[75vh] rounded-3xl overflow-hidden shadow-2xl"></div>
 </div>
 
-<!-- PANNELLO -->
 <div class="bg-slate-900 rounded-3xl p-4">
-
 <input
 id="search"
 placeholder="Cerca comune..."
@@ -49,7 +46,6 @@ class="w-full p-3 rounded-2xl bg-slate-800 mb-4 outline-none"
 />
 
 <div id="list" class="space-y-2 max-h-[65vh] overflow-auto text-sm"></div>
-
 </div>
 
 </div>
@@ -61,17 +57,13 @@ class="w-full p-3 rounded-2xl bg-slate-800 mb-4 outline-none"
 </div>
 
 <script>
-/* MAPPA */
 const map = L.map('map').setView([40.1, 9.0], 8);
 
 L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-{
-attribution:'© OpenStreetMap'
-}
+{ attribution:'© OpenStreetMap' }
 ).addTo(map);
 
-/* COMUNI REALI */
 const comuni = [
 ['Cagliari',39.2238,9.1217],
 ['Sassari',40.7267,8.5597],
@@ -91,7 +83,6 @@ const comuni = [
 ['Villasimius',39.144,9.518]
 ];
 
-/* NURAGHI REALI */
 const nuraghi = [
 ['Su Nuraxi',39.704,9.002],
 ['Santu Antine',40.504,8.773],
@@ -105,84 +96,48 @@ const nuraghi = [
 
 const list = document.getElementById('list');
 
-/* INSERIMENTO COMUNI */
 comuni.forEach(c => {
-
-L.circleMarker(
-[c[1], c[2]],
-{
+L.circleMarker([c[1], c[2]], {
 radius:5,
 color:'#34d399',
 fillColor:'#34d399',
 fillOpacity:1
-}
-)
+})
 .addTo(map)
 .bindPopup(`
 <b>${c[0]}</b><br>
-<a target="_blank"
-href="https://it.wikipedia.org/wiki/${encodeURIComponent(c[0])}">
-Wikipedia
-</a><br>
-<a target="_blank"
-href="https://it.wikivoyage.org/wiki/${encodeURIComponent(c[0])}">
-Wikivoyage
-</a><br>
-<a target="_blank"
-href="https://www.wikiloc.com/wikiloc/find.do?q=${encodeURIComponent(c[0])}">
-Wikiloc
-</a>
+<a target="_blank" href="https://it.wikipedia.org/wiki/${encodeURIComponent(c[0])}">Wikipedia</a><br>
+<a target="_blank" href="https://it.wikivoyage.org/wiki/${encodeURIComponent(c[0])}">Wikivoyage</a><br>
+<a target="_blank" href="https://www.wikiloc.com/wikiloc/find.do?q=${encodeURIComponent(c[0])}">Wikiloc</a>
 `);
 
 const a = document.createElement('a');
-a.className =
-'block bg-slate-800 p-3 rounded-2xl hover:bg-slate-700';
+a.className = 'block bg-slate-800 p-3 rounded-2xl hover:bg-slate-700';
 a.textContent = c[0];
-a.href =
-'https://it.wikipedia.org/wiki/' +
-encodeURIComponent(c[0]);
+a.href = 'https://it.wikipedia.org/wiki/' + encodeURIComponent(c[0]);
 a.target = '_blank';
-
 list.appendChild(a);
-
 });
 
-/* INSERIMENTO NURAGHI */
 nuraghi.forEach(n => {
-
-L.circleMarker(
-[n[1], n[2]],
-{
+L.circleMarker([n[1], n[2]], {
 radius:8,
 color:'#fcd34d',
 fillColor:'#fcd34d',
 fillOpacity:1
-}
-)
+})
 .addTo(map)
 .bindPopup(`
 <b>${n[0]}</b><br>
-<a target="_blank"
-href="https://it.wikipedia.org/wiki/${encodeURIComponent(n[0])}">
-Wikipedia
-</a><br>
-<a target="_blank"
-href="https://www.wikiloc.com">
-Wikiloc
-</a>
+<a target="_blank" href="https://it.wikipedia.org/wiki/${encodeURIComponent(n[0])}">Wikipedia</a><br>
+<a target="_blank" href="https://www.wikiloc.com">Wikiloc</a>
 `);
-
 });
 
-/* RICERCA */
 search.oninput = () => {
 const q = search.value.toLowerCase();
-
 [...list.children].forEach(a => {
-a.style.display =
-a.textContent.toLowerCase().includes(q)
-? 'block'
-: 'none';
+a.style.display = a.textContent.toLowerCase().includes(q) ? 'block' : 'none';
 });
 };
 </script>
