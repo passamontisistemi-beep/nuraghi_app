@@ -47,6 +47,7 @@ border:none;
 padding:10px 14px;
 border-radius:16px;
 font-size:14px;
+text-decoration:none;
 }
 
 .bottom{
@@ -73,7 +74,7 @@ font-size:14px;
 .rss span{
 display:inline-block;
 padding-left:100%;
-animation:scroll 22s linear infinite;
+animation:scroll 28s linear infinite;
 }
 
 @keyframes scroll{
@@ -90,10 +91,18 @@ padding:10px;
 border-radius:16px;
 }
 
+.place-title{
+font-size:20px;
+font-weight:800;
+color:#111827;
+margin-bottom:8px;
+}
+
 .popup-link{
 display:block;
-margin-top:6px;
-color:#2563eb;
+font-size:13px;
+color:#475569;
+margin-top:4px;
 text-decoration:underline;
 }
 </style>
@@ -102,8 +111,11 @@ text-decoration:underline;
 <body>
 
 <div class="panel">
+
+<a href="index.html" class="control">Home</a>
+
 <select id="area" class="control">
-<option value="all">Area</option>
+<option value="all">Seleziona area</option>
 <option value="cagliari">Cagliari</option>
 <option value="sassari">Sassari</option>
 <option value="nuoro">Nuoro</option>
@@ -113,24 +125,26 @@ text-decoration:underline;
 
 <a
 href="mailto:info@cooperativa.it?subject=Customer Satisfaction Nuraghi"
-class="control"
-style="text-decoration:none;">
+class="control">
 Feedback
 </a>
+
 </div>
 
 <div id="map"></div>
 
 <div class="bottom">
+
 <div class="rss">
 <span>
-RSS Cultura • Turismo • Giovani • UNESCO • Nuraghi • Comuni della Sardegna •
+Questo spazio pubblicherà le informazioni sulle prelibatezze enogastronomiche di quell'area, gli eventi programmati nella settimana e le ultime notizie ed eventi acquisite dal sito AGID dei comuni limitrofi •
 </span>
 </div>
 
 <div class="logo">
 <strong>PASSAMONTI</strong> COMMUNICATION
 </div>
+
 </div>
 
 <script>
@@ -145,7 +159,6 @@ keyboard:false,
 tap:true
 });
 
-/* Sardegna fissa fullscreen */
 const bounds = L.latLngBounds(
 [38.75,7.95],
 [41.35,10.10]
@@ -153,13 +166,11 @@ const bounds = L.latLngBounds(
 
 map.fitBounds(bounds);
 
-/* Tiles */
 L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 { attribution:'© OpenStreetMap' }
 ).addTo(map);
 
-/* DATI */
 const comuni = [
 ['Cagliari',39.2238,9.1217,'cagliari'],
 ['Quartu Sant Elena',39.241,9.184,'cagliari'],
@@ -193,37 +204,43 @@ const nuraghi = [
 
 let layers=[];
 
+function popupComune(nome){
+return `
+<div class="place-title">${nome}</div>
+<a class="popup-link" target="_blank"
+href="https://it.wikipedia.org/wiki/${encodeURIComponent(nome)}">Wikipedia</a>
+<a class="popup-link" target="_blank"
+href="https://it.wikivoyage.org/wiki/${encodeURIComponent(nome)}">Wikivoyage</a>
+<a class="popup-link" target="_blank"
+href="https://www.wikiloc.com/wikiloc/find.do?q=${encodeURIComponent(nome)}">Wikiloc</a>
+`;
+}
+
+function popupNuraghe(nome){
+return `
+<div class="place-title">${nome}</div>
+<a class="popup-link" target="_blank"
+href="https://it.wikipedia.org/wiki/${encodeURIComponent(nome)}">Wikipedia</a>
+`;
+}
+
 function draw(filter='all'){
 layers.forEach(l=>map.removeLayer(l));
 layers=[];
 
-/* comuni blu */
 comuni.forEach(c=>{
 if(filter!=='all' && c[3]!==filter) return;
 
 const m=L.circleMarker([c[1],c[2]],{
 radius:6,
-color:'#2563eb',
-fillColor:'#2563eb',
+color:'#3b82f6',
+fillColor:'#3b82f6',
 fillOpacity:1
-}).addTo(map);
-
-m.bindPopup(`
-<b>${c[0]}</b>
-<a class="popup-link" target="_blank"
-href="https://it.wikipedia.org/wiki/${encodeURIComponent(c[0])}">
-Wikipedia
-</a>
-<a class="popup-link" target="_blank"
-href="https://it.wikivoyage.org/wiki/${encodeURIComponent(c[0])}">
-Wikivoyage
-</a>
-`);
+}).addTo(map).bindPopup(popupComune(c[0]));
 
 layers.push(m);
 });
 
-/* nuraghi rossi grandi */
 nuraghi.forEach(n=>{
 if(filter!=='all' && n[3]!==filter) return;
 
@@ -232,15 +249,7 @@ radius:11,
 color:'#ef4444',
 fillColor:'#ef4444',
 fillOpacity:1
-}).addTo(map);
-
-m.bindPopup(`
-<b>${n[0]}</b>
-<a class="popup-link" target="_blank"
-href="https://it.wikipedia.org/wiki/${encodeURIComponent(n[0])}">
-Wikipedia
-</a>
-`);
+}).addTo(map).bindPopup(popupNuraghe(n[0]));
 
 layers.push(m);
 });
@@ -248,7 +257,6 @@ layers.push(m);
 
 draw();
 
-/* filtro area */
 document.getElementById('area').onchange=(e)=>{
 draw(e.target.value);
 };
