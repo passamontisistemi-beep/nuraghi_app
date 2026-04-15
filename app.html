@@ -48,7 +48,6 @@ text-align:center;
 font-size:22px;
 font-weight:800;
 color:#fcd34d;
-backdrop-filter:blur(6px);
 }
 
 .panel{
@@ -60,7 +59,7 @@ justify-content:center;
 
 .control{
 background:rgba(15,23,42,.92);
-color:white;
+color:#fff;
 border:none;
 padding:10px 14px;
 border-radius:16px;
@@ -124,28 +123,6 @@ color:#475569;
 margin-top:3px;
 text-decoration:underline;
 }
-
-/* iPhone / iPad */
-.ios .control{
-border-radius:22px;
-padding:12px 16px;
-font-size:15px;
-}
-
-.ios .title-box{
-font-size:24px;
-}
-
-/* Android */
-.android .control{
-padding:12px 14px;
-box-shadow:0 2px 6px rgba(0,0,0,.25);
-}
-
-/* Desktop */
-.desktop .title-box{
-font-size:28px;
-}
 </style>
 </head>
 
@@ -170,9 +147,7 @@ I Giganti della Sardegna
 <option value="sud sardegna">Sud Sardegna</option>
 </select>
 
-<a
-href="mailto:info@cooperativa.it?subject=Dagli Voce - Customer Satisfaction"
-class="control">
+<a href="mailto:info@cooperativa.it?subject=Dagli Voce" class="control">
 Dagli voce
 </a>
 
@@ -196,27 +171,14 @@ Questo spazio è riservato alla pubblicazione delle informazioni sul patrimonio 
 </div>
 
 <script>
-/* DEVICE DETECTION */
-const ua = navigator.userAgent;
-
-if(/iPhone|iPad|iPod/i.test(ua)){
-document.body.classList.add("ios");
-}else if(/Android/i.test(ua)){
-document.body.classList.add("android");
-}else{
-document.body.classList.add("desktop");
-}
-
-/* MAPPA FISSA */
-const map = L.map("map",{
+const map = L.map('map',{
 zoomControl:false,
 dragging:false,
 touchZoom:false,
 doubleClickZoom:false,
 scrollWheelZoom:false,
 boxZoom:false,
-keyboard:false,
-tap:true
+keyboard:false
 });
 
 const bounds = L.latLngBounds(
@@ -227,41 +189,39 @@ const bounds = L.latLngBounds(
 map.fitBounds(bounds);
 
 L.tileLayer(
-"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-{ attribution:"© OpenStreetMap" }
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{attribution:'© OpenStreetMap'}
 ).addTo(map);
 
-/* COMUNI */
 const comuni = [
-["Cagliari",39.2238,9.1217,"cagliari"],
-["Quartu Sant Elena",39.241,9.184,"cagliari"],
-["Sassari",40.7267,8.5597,"sassari"],
-["Alghero",40.557,8.319,"sassari"],
-["Torralba",40.516,8.768,"sassari"],
-["Nuoro",40.3211,9.3308,"nuoro"],
-["Dorgali",40.292,9.588,"nuoro"],
-["Oristano",39.9036,8.5920,"oristano"],
-["Cabras",39.930,8.533,"oristano"],
-["Abbasanta",40.126,8.820,"oristano"],
-["Barumini",39.705,9.005,"sud sardegna"],
-["Carbonia",39.167,8.522,"sud sardegna"],
-["Iglesias",39.309,8.537,"sud sardegna"]
+['Cagliari',39.2238,9.1217,'cagliari'],
+['Quartu Sant Elena',39.241,9.184,'cagliari'],
+['Sassari',40.7267,8.5597,'sassari'],
+['Alghero',40.557,8.319,'sassari'],
+['Torralba',40.516,8.768,'sassari'],
+['Nuoro',40.3211,9.3308,'nuoro'],
+['Dorgali',40.292,9.588,'nuoro'],
+['Oristano',39.9036,8.5920,'oristano'],
+['Cabras',39.930,8.533,'oristano'],
+['Abbasanta',40.126,8.820,'oristano'],
+['Barumini',39.705,9.005,'sud sardegna'],
+['Carbonia',39.167,8.522,'sud sardegna'],
+['Iglesias',39.309,8.537,'sud sardegna']
 ];
 
-/* NURAGHI */
 const nuraghi = [
-["Su Nuraxi",39.704,9.002,"sud sardegna"],
-["Santu Antine",40.504,8.773,"sassari"],
-["Losa",40.126,8.847,"oristano"],
-["Arrubiu",39.495,9.230,"sud sardegna"],
-["Palmavera",40.596,8.285,"sassari"],
-["Genna Maria",39.645,8.969,"sud sardegna"],
-["Majori",41.079,9.176,"sassari"],
-["Seruci",39.255,8.518,"sud sardegna"],
-["Nolza",39.540,9.270,"sud sardegna"],
-["Aiga",40.210,9.110,"nuoro"],
-["Oes",40.470,8.930,"sassari"],
-["Is Paras",39.670,8.950,"oristano"]
+['Su Nuraxi',39.704,9.002,'sud sardegna'],
+['Santu Antine',40.504,8.773,'sassari'],
+['Losa',40.126,8.847,'oristano'],
+['Arrubiu',39.495,9.230,'sud sardegna'],
+['Palmavera',40.596,8.285,'sassari'],
+['Genna Maria',39.645,8.969,'sud sardegna'],
+['Majori',41.079,9.176,'sassari'],
+['Seruci',39.255,8.518,'sud sardegna'],
+['Nolza',39.540,9.270,'sud sardegna'],
+['Aiga',40.210,9.110,'nuoro'],
+['Oes',40.470,8.930,'sassari'],
+['Is Paras',39.670,8.950,'oristano']
 ];
 
 let layers=[];
@@ -269,49 +229,43 @@ let layers=[];
 function popupComune(nome){
 return `
 <div class="place-title">${nome}</div>
-<a class="popup-link" target="_blank"
-href="https://it.wikipedia.org/wiki/${encodeURIComponent(nome)}">Wikipedia</a>
-<a class="popup-link" target="_blank"
-href="https://it.wikivoyage.org/wiki/${encodeURIComponent(nome)}">Wikivoyage</a>
-<a class="popup-link" target="_blank"
-href="https://www.wikiloc.com/wikiloc/find.do?q=${encodeURIComponent(nome)}">Wikiloc</a>
+<a class="popup-link" target="_blank" href="https://it.wikipedia.org/wiki/${encodeURIComponent(nome)}">Wikipedia</a>
+<a class="popup-link" target="_blank" href="https://it.wikivoyage.org/wiki/${encodeURIComponent(nome)}">Wikivoyage</a>
+<a class="popup-link" target="_blank" href="https://www.wikiloc.com/wikiloc/find.do?q=${encodeURIComponent(nome)}">Wikiloc</a>
 `;
 }
 
 function popupNuraghe(nome){
 return `
 <div class="place-title">${nome}</div>
-<a class="popup-link" target="_blank"
-href="https://it.wikipedia.org/wiki/${encodeURIComponent(nome)}">Wikipedia</a>
+<a class="popup-link" target="_blank" href="https://it.wikipedia.org/wiki/${encodeURIComponent(nome)}">Wikipedia</a>
 `;
 }
 
-function draw(filter="all"){
+function draw(filter='all'){
 layers.forEach(l=>map.removeLayer(l));
 layers=[];
 
-/* comuni blu */
 comuni.forEach(c=>{
-if(filter!=="all" && c[3]!==filter) return;
+if(filter!=='all' && c[3]!==filter) return;
 
 const m=L.circleMarker([c[1],c[2]],{
 radius:6,
-color:"#3b82f6",
-fillColor:"#3b82f6",
+color:'#3b82f6',
+fillColor:'#3b82f6',
 fillOpacity:1
 }).addTo(map).bindPopup(popupComune(c[0]));
 
 layers.push(m);
 });
 
-/* nuraghi rossi */
 nuraghi.forEach(n=>{
-if(filter!=="all" && n[3]!==filter) return;
+if(filter!=='all' && n[3]!==filter) return;
 
 const m=L.circleMarker([n[1],n[2]],{
 radius:11,
-color:"#ef4444",
-fillColor:"#ef4444",
+color:'#ef4444',
+fillColor:'#ef4444',
 fillOpacity:1
 }).addTo(map).bindPopup(popupNuraghe(n[0]));
 
@@ -321,7 +275,7 @@ layers.push(m);
 
 draw();
 
-document.getElementById("area").onchange=(e)=>{
+document.getElementById('area').onchange=(e)=>{
 draw(e.target.value);
 };
 </script>
