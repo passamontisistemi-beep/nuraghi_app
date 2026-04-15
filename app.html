@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Nuraghi Sardegna Mobile Definitiva</title>
+<title>I Giganti della Sardegna</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -16,7 +16,7 @@ padding:0;
 height:100%;
 overflow:hidden;
 background:#0f172a;
-font-family:system-ui;
+font-family:Arial, sans-serif;
 }
 
 #map{
@@ -29,15 +29,32 @@ z-index:1;
 background:#0f172a;
 }
 
-.panel{
+.top-wrap{
 position:fixed;
-top:12px;
+top:10px;
 left:12px;
 right:12px;
 z-index:999;
 display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+.title-box{
+background:rgba(15,23,42,.92);
+padding:10px 14px;
+border-radius:16px;
+text-align:center;
+font-size:22px;
+font-weight:800;
+color:#fcd34d;
+}
+
+.panel{
+display:flex;
 gap:8px;
 flex-wrap:wrap;
+justify-content:center;
 }
 
 .control{
@@ -74,7 +91,7 @@ font-size:14px;
 .rss span{
 display:inline-block;
 padding-left:100%;
-animation:scroll 28s linear infinite;
+animation:scroll 48s linear infinite;
 }
 
 @keyframes scroll{
@@ -92,23 +109,30 @@ border-radius:16px;
 }
 
 .place-title{
-font-size:20px;
-font-weight:800;
+font-family:Arial, sans-serif;
+font-size:16px;
+font-weight:700;
 color:#111827;
-margin-bottom:8px;
+margin-bottom:6px;
 }
 
 .popup-link{
 display:block;
-font-size:13px;
+font-size:12px;
 color:#475569;
-margin-top:4px;
+margin-top:3px;
 text-decoration:underline;
 }
 </style>
 </head>
 
 <body>
+
+<div class="top-wrap">
+
+<div class="title-box">
+I Giganti della Sardegna
+</div>
 
 <div class="panel">
 
@@ -124,11 +148,12 @@ text-decoration:underline;
 </select>
 
 <a
-href="mailto:info@cooperativa.it?subject=Customer Satisfaction Nuraghi"
+href="mailto:info@cooperativa.it?subject=Dagli Voce - Customer Satisfaction"
 class="control">
-Feedback
+Dagli voce
 </a>
 
+</div>
 </div>
 
 <div id="map"></div>
@@ -137,7 +162,7 @@ Feedback
 
 <div class="rss">
 <span>
-Questo spazio pubblicherà le informazioni sulle prelibatezze enogastronomiche di quell'area, gli eventi programmati nella settimana e le ultime notizie ed eventi acquisite dal sito AGID dei comuni limitrofi •
+Questo spazio è riservato alla pubblicazione delle informazioni sul patrimonio enogastronomico di quell'area e le ultime notizie ed eventi acquisite dal sito AGID dei comuni limitrofi •
 </span>
 </div>
 
