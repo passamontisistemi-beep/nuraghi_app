@@ -2,49 +2,108 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nuraghi Sardegna Definitiva</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Nuraghi Sardegna Mobile Definitiva</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
-@keyframes marquee{
-0%{transform:translateX(100%)}
+html,body{
+margin:0;
+padding:0;
+height:100%;
+overflow:hidden;
+background:#0f172a;
+font-family:system-ui;
+}
+
+#map{
+height:100vh;
+width:100vw;
+z-index:1;
+}
+
+.leaflet-container{
+background:#0f172a;
+}
+
+.panel{
+position:fixed;
+top:12px;
+left:12px;
+right:12px;
+z-index:999;
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+}
+
+.control{
+background:rgba(15,23,42,.92);
+color:white;
+border:none;
+padding:10px 14px;
+border-radius:16px;
+font-size:14px;
+}
+
+.bottom{
+position:fixed;
+left:12px;
+right:12px;
+bottom:12px;
+z-index:999;
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+.rss{
+overflow:hidden;
+white-space:nowrap;
+background:rgba(15,23,42,.92);
+padding:10px;
+border-radius:16px;
+color:#cbd5e1;
+font-size:14px;
+}
+
+.rss span{
+display:inline-block;
+padding-left:100%;
+animation:scroll 22s linear infinite;
+}
+
+@keyframes scroll{
+0%{transform:translateX(0)}
 100%{transform:translateX(-100%)}
+}
+
+.logo{
+text-align:center;
+font-size:13px;
+color:#94a3b8;
+background:rgba(15,23,42,.92);
+padding:10px;
+border-radius:16px;
+}
+
+.popup-link{
+display:block;
+margin-top:6px;
+color:#2563eb;
+text-decoration:underline;
 }
 </style>
 </head>
 
-<body class="bg-[#0f172a] text-white min-h-screen">
+<body>
 
-<div class="max-w-7xl mx-auto p-4 space-y-4">
-
-<h1 class="text-4xl md:text-5xl font-bold text-center text-amber-300">
-Nuraghi di Sardegna
-</h1>
-
-<div class="grid lg:grid-cols-3 gap-4">
-
-<!-- MAPPA -->
-<div class="lg:col-span-2">
-<div id="map" class="h-[75vh] rounded-3xl overflow-hidden shadow-2xl"></div>
-</div>
-
-<!-- PANNELLO -->
-<div class="bg-slate-900 rounded-3xl p-4 space-y-4">
-
-<input
-id="search"
-placeholder="Cerca comune..."
-class="w-full p-3 rounded-2xl bg-slate-800 outline-none"
-/>
-
-<select
-id="areaFilter"
-class="w-full p-3 rounded-2xl bg-slate-800 outline-none">
-<option value="all">Seleziona area / provincia</option>
+<div class="panel">
+<select id="area" class="control">
+<option value="all">Area</option>
 <option value="cagliari">Cagliari</option>
 <option value="sassari">Sassari</option>
 <option value="nuoro">Nuoro</option>
@@ -53,57 +112,70 @@ class="w-full p-3 rounded-2xl bg-slate-800 outline-none">
 </select>
 
 <a
-href="mailto:info@cooperativa.it?subject=Customer Satisfaction Nuraghi&body=Invio il mio giudizio sulla webapp:"
-class="block text-center bg-amber-300 text-black font-bold p-3 rounded-2xl">
-Customer Satisfaction
+href="mailto:info@cooperativa.it?subject=Customer Satisfaction Nuraghi"
+class="control"
+style="text-decoration:none;">
+Feedback
 </a>
-
-<div id="list" class="space-y-2 max-h-[45vh] overflow-auto text-sm"></div>
-
 </div>
 
-</div>
+<div id="map"></div>
 
-<!-- RSS IN BASSO -->
-<div class="overflow-hidden rounded-2xl bg-slate-900 py-2">
-<div class="whitespace-nowrap px-4 text-slate-300"
-style="animation:marquee 30s linear infinite;">
+<div class="bottom">
+<div class="rss">
+<span>
 RSS Cultura • Turismo • Giovani • UNESCO • Nuraghi • Comuni della Sardegna •
-</div>
+</span>
 </div>
 
-<footer class="text-center text-slate-400 pt-4 border-t border-slate-800">
-<span class="font-bold">PASSAMONTI</span> COMMUNICATION
-</footer>
-
+<div class="logo">
+<strong>PASSAMONTI</strong> COMMUNICATION
+</div>
 </div>
 
 <script>
-const map = L.map('map').setView([40.1, 9.0], 8);
+const map = L.map('map',{
+zoomControl:false,
+dragging:false,
+touchZoom:false,
+doubleClickZoom:false,
+scrollWheelZoom:false,
+boxZoom:false,
+keyboard:false,
+tap:true
+});
 
+/* Sardegna fissa fullscreen */
+const bounds = L.latLngBounds(
+[38.75,7.95],
+[41.35,10.10]
+);
+
+map.fitBounds(bounds);
+
+/* Tiles */
 L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 { attribution:'© OpenStreetMap' }
 ).addTo(map);
 
-/* COMUNI */
+/* DATI */
 const comuni = [
 ['Cagliari',39.2238,9.1217,'cagliari'],
 ['Quartu Sant Elena',39.241,9.184,'cagliari'],
 ['Sassari',40.7267,8.5597,'sassari'],
 ['Alghero',40.557,8.319,'sassari'],
+['Torralba',40.516,8.768,'sassari'],
 ['Nuoro',40.3211,9.3308,'nuoro'],
 ['Dorgali',40.292,9.588,'nuoro'],
 ['Oristano',39.9036,8.5920,'oristano'],
 ['Cabras',39.930,8.533,'oristano'],
-['Carbonia',39.167,8.522,'sud sardegna'],
-['Barumini',39.705,9.005,'sud sardegna'],
-['Iglesias',39.309,8.537,'sud sardegna'],
 ['Abbasanta',40.126,8.820,'oristano'],
-['Torralba',40.516,8.768,'sassari']
+['Barumini',39.705,9.005,'sud sardegna'],
+['Carbonia',39.167,8.522,'sud sardegna'],
+['Iglesias',39.309,8.537,'sud sardegna']
 ];
 
-/* NURAGHI */
 const nuraghi = [
 ['Su Nuraxi',39.704,9.002,'sud sardegna'],
 ['Santu Antine',40.504,8.773,'sassari'],
@@ -113,92 +185,72 @@ const nuraghi = [
 ['Genna Maria',39.645,8.969,'sud sardegna'],
 ['Majori',41.079,9.176,'sassari'],
 ['Seruci',39.255,8.518,'sud sardegna'],
-['Nuraddeo',40.663,8.570,'sassari'],
+['Nolza',39.540,9.270,'sud sardegna'],
 ['Aiga',40.210,9.110,'nuoro'],
-['Santa Barbara',39.330,8.500,'sud sardegna'],
-['Is Paras',39.670,8.950,'oristano'],
 ['Oes',40.470,8.930,'sassari'],
-['Nolza',39.540,9.270,'sud sardegna']
+['Is Paras',39.670,8.950,'oristano']
 ];
 
-let comuneMarkers = [];
-let nuragheMarkers = [];
+let layers=[];
 
-const list = document.getElementById("list");
+function draw(filter='all'){
+layers.forEach(l=>map.removeLayer(l));
+layers=[];
 
-/* DISEGNA MAPPA */
-function drawMap(filter="all"){
+/* comuni blu */
+comuni.forEach(c=>{
+if(filter!=='all' && c[3]!==filter) return;
 
-comuneMarkers.forEach(m => map.removeLayer(m));
-nuragheMarkers.forEach(m => map.removeLayer(m));
-comuneMarkers = [];
-nuragheMarkers = [];
-list.innerHTML = '';
-
-comuni.forEach(c => {
-if(filter !== "all" && c[3] !== filter) return;
-
-let marker = L.circleMarker([c[1],c[2]],{
+const m=L.circleMarker([c[1],c[2]],{
 radius:6,
-color:'#3b82f6',
-fillColor:'#3b82f6',
+color:'#2563eb',
+fillColor:'#2563eb',
 fillOpacity:1
-})
-.addTo(map)
-.bindPopup(`
-<b>${c[0]}</b><br>
-<a target="_blank" href="https://it.wikipedia.org/wiki/${encodeURIComponent(c[0])}">Wikipedia</a><br>
-<a target="_blank" href="https://it.wikivoyage.org/wiki/${encodeURIComponent(c[0])}">Wikivoyage</a><br>
-<a target="_blank" href="https://www.wikiloc.com/wikiloc/find.do?q=${encodeURIComponent(c[0])}">Wikiloc</a>
+}).addTo(map);
+
+m.bindPopup(`
+<b>${c[0]}</b>
+<a class="popup-link" target="_blank"
+href="https://it.wikipedia.org/wiki/${encodeURIComponent(c[0])}">
+Wikipedia
+</a>
+<a class="popup-link" target="_blank"
+href="https://it.wikivoyage.org/wiki/${encodeURIComponent(c[0])}">
+Wikivoyage
+</a>
 `);
 
-comuneMarkers.push(marker);
-
-let a = document.createElement("a");
-a.className="block bg-slate-800 p-3 rounded-2xl hover:bg-slate-700";
-a.textContent=c[0];
-a.href="https://it.wikipedia.org/wiki/"+encodeURIComponent(c[0]);
-a.target="_blank";
-list.appendChild(a);
-
+layers.push(m);
 });
 
-nuraghi.forEach(n => {
-if(filter !== "all" && n[3] !== filter) return;
+/* nuraghi rossi grandi */
+nuraghi.forEach(n=>{
+if(filter!=='all' && n[3]!==filter) return;
 
-let marker = L.circleMarker([n[1],n[2]],{
-radius:10,
+const m=L.circleMarker([n[1],n[2]],{
+radius:11,
 color:'#ef4444',
 fillColor:'#ef4444',
 fillOpacity:1
-})
-.addTo(map)
-.bindPopup(`
-<b>${n[0]}</b><br>
-<a target="_blank" href="https://it.wikipedia.org/wiki/${encodeURIComponent(n[0])}">Wikipedia</a>
+}).addTo(map);
+
+m.bindPopup(`
+<b>${n[0]}</b>
+<a class="popup-link" target="_blank"
+href="https://it.wikipedia.org/wiki/${encodeURIComponent(n[0])}">
+Wikipedia
+</a>
 `);
 
-nuragheMarkers.push(marker);
+layers.push(m);
 });
-
 }
 
-/* AVVIO */
-drawMap();
+draw();
 
-/* FILTRO PROVINCIA */
-areaFilter.onchange = () => {
-drawMap(areaFilter.value);
-};
-
-/* RICERCA */
-search.oninput = () => {
-const q = search.value.toLowerCase();
-[...list.children].forEach(a => {
-a.style.display = a.textContent.toLowerCase().includes(q)
-? 'block'
-: 'none';
-});
+/* filtro area */
+document.getElementById('area').onchange=(e)=>{
+draw(e.target.value);
 };
 </script>
 
