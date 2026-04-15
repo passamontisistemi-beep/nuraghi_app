@@ -1,1 +1,191 @@
-<!DOCTYPE html><html lang='it'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Nuraghi Sardegna Reale</title><link rel='stylesheet' href='https://unpkg.com/leaflet/dist/leaflet.css'/><script src='https://cdn.tailwindcss.com'></script><script src='https://unpkg.com/leaflet/dist/leaflet.js'></script></head><body class='bg-[#0f172a] text-white min-h-screen'><div class='max-w-7xl mx-auto p-4 space-y-4'><h1 class='text-4xl font-bold text-amber-300 text-center'>Nuraghi di Sardegna</h1><div class='grid lg:grid-cols-3 gap-4'><div class='lg:col-span-2'><div id='map' class='h-[75vh] rounded-3xl overflow-hidden'></div></div><div class='bg-slate-900 rounded-3xl p-4'><input id='search' placeholder='Cerca comune...' class='w-full p-3 rounded-2xl bg-slate-800 mb-3'><div id='list' class='space-y-2 max-h-[65vh] overflow-auto text-sm'></div></div></div><footer class='text-center text-slate-400 pt-4 border-t border-slate-800'><span class='font-bold'>PASSAMONTI</span> COMMUNICATION</footer></div><script>const map=L.map('map').setView([40.1,9.0],8);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);const comuni=[['Cagliari',39.2238,9.1217],['Sassari',40.7267,8.5597],['Nuoro',40.3211,9.3308],['Oristano',39.9036,8.5920],['Barumini',39.705,9.005],['Torralba',40.516,8.768],['Abbasanta',40.126,8.820]];const nuraghi=[['Su Nuraxi',39.704,9.002],['Santu Antine',40.504,8.773],['Losa',40.126,8.847],['Arrubiu',39.495,9.230]];const list=document.getElementById('list');comuni.forEach(c=>{L.circleMarker([c[1],c[2]],{radius:5,color:'#34d399'}).addTo(map).bindPopup('<b>'+c[0]+'</b><br><a target=_blank href=https://it.wikipedia.org/wiki/'+encodeURIComponent(c[0])+'>Wikipedia</a>');const a=document.createElement('a');a.className='block bg-slate-800 p-3 rounded-2xl';a.textContent=c[0];a.href='https://it.wikipedia.org/wiki/'+encodeURIComponent(c[0]);a.target='_blank';list.appendChild(a);});nuraghi.forEach(n=>{L.circleMarker([n[1],n[2]],{radius:8,color:'#fcd34d'}).addTo(map).bindPopup('<b>'+n[0]+'</b>');});search.oninput=()=>{const q=search.value.toLowerCase();[...list.children].forEach(a=>a.style.display=a.textContent.toLowerCase().includes(q)?'block':'none');};</script></body></html>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nuraghi Sardegna Reale</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+@keyframes marquee{
+0%{transform:translateX(100%)}
+100%{transform:translateX(-100%)}
+}
+</style>
+</head>
+
+<body class="bg-[#0f172a] text-white min-h-screen">
+
+<div class="max-w-7xl mx-auto p-4 space-y-4">
+
+<h1 class="text-4xl md:text-5xl font-bold text-center text-amber-300">
+Nuraghi di Sardegna
+</h1>
+
+<div class="overflow-hidden rounded-2xl bg-slate-900 py-2">
+<div class="whitespace-nowrap px-4 text-slate-300"
+style="animation:marquee 30s linear infinite;">
+RSS Cultura • Turismo • Giovani • UNESCO • Nuraghi • Comuni della Sardegna •
+</div>
+</div>
+
+<div class="grid lg:grid-cols-3 gap-4">
+
+<!-- MAPPA -->
+<div class="lg:col-span-2">
+<div id="map" class="h-[75vh] rounded-3xl overflow-hidden shadow-2xl"></div>
+</div>
+
+<!-- PANNELLO -->
+<div class="bg-slate-900 rounded-3xl p-4">
+
+<input
+id="search"
+placeholder="Cerca comune..."
+class="w-full p-3 rounded-2xl bg-slate-800 mb-4 outline-none"
+/>
+
+<div id="list" class="space-y-2 max-h-[65vh] overflow-auto text-sm"></div>
+
+</div>
+
+</div>
+
+<footer class="text-center text-slate-400 pt-4 border-t border-slate-800">
+<span class="font-bold">PASSAMONTI</span> COMMUNICATION
+</footer>
+
+</div>
+
+<script>
+/* MAPPA */
+const map = L.map('map').setView([40.1, 9.0], 8);
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{
+attribution:'© OpenStreetMap'
+}
+).addTo(map);
+
+/* COMUNI REALI */
+const comuni = [
+['Cagliari',39.2238,9.1217],
+['Sassari',40.7267,8.5597],
+['Nuoro',40.3211,9.3308],
+['Oristano',39.9036,8.5920],
+['Alghero',40.557,8.319],
+['Olbia',40.923,9.498],
+['Iglesias',39.309,8.537],
+['Carbonia',39.167,8.522],
+['Barumini',39.705,9.005],
+['Torralba',40.516,8.768],
+['Abbasanta',40.126,8.820],
+['Bosa',40.299,8.498],
+['Dorgali',40.292,9.588],
+['Cabras',39.930,8.533],
+['Pula',38.989,8.999],
+['Villasimius',39.144,9.518]
+];
+
+/* NURAGHI REALI */
+const nuraghi = [
+['Su Nuraxi',39.704,9.002],
+['Santu Antine',40.504,8.773],
+['Losa',40.126,8.847],
+['Arrubiu',39.495,9.230],
+['Palmavera',40.596,8.285],
+['Nuraghe Genna Maria',39.645,8.969],
+['Nuraghe Majori',41.079,9.176],
+['Seruci',39.255,8.518]
+];
+
+const list = document.getElementById('list');
+
+/* INSERIMENTO COMUNI */
+comuni.forEach(c => {
+
+L.circleMarker(
+[c[1], c[2]],
+{
+radius:5,
+color:'#34d399',
+fillColor:'#34d399',
+fillOpacity:1
+}
+)
+.addTo(map)
+.bindPopup(`
+<b>${c[0]}</b><br>
+<a target="_blank"
+href="https://it.wikipedia.org/wiki/${encodeURIComponent(c[0])}">
+Wikipedia
+</a><br>
+<a target="_blank"
+href="https://it.wikivoyage.org/wiki/${encodeURIComponent(c[0])}">
+Wikivoyage
+</a><br>
+<a target="_blank"
+href="https://www.wikiloc.com/wikiloc/find.do?q=${encodeURIComponent(c[0])}">
+Wikiloc
+</a>
+`);
+
+const a = document.createElement('a');
+a.className =
+'block bg-slate-800 p-3 rounded-2xl hover:bg-slate-700';
+a.textContent = c[0];
+a.href =
+'https://it.wikipedia.org/wiki/' +
+encodeURIComponent(c[0]);
+a.target = '_blank';
+
+list.appendChild(a);
+
+});
+
+/* INSERIMENTO NURAGHI */
+nuraghi.forEach(n => {
+
+L.circleMarker(
+[n[1], n[2]],
+{
+radius:8,
+color:'#fcd34d',
+fillColor:'#fcd34d',
+fillOpacity:1
+}
+)
+.addTo(map)
+.bindPopup(`
+<b>${n[0]}</b><br>
+<a target="_blank"
+href="https://it.wikipedia.org/wiki/${encodeURIComponent(n[0])}">
+Wikipedia
+</a><br>
+<a target="_blank"
+href="https://www.wikiloc.com">
+Wikiloc
+</a>
+`);
+
+});
+
+/* RICERCA */
+search.oninput = () => {
+const q = search.value.toLowerCase();
+
+[...list.children].forEach(a => {
+a.style.display =
+a.textContent.toLowerCase().includes(q)
+? 'block'
+: 'none';
+});
+};
+</script>
+
+</body>
+</html>
