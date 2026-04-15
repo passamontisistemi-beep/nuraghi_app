@@ -32,8 +32,8 @@ background:#0f172a;
 .top-wrap{
 position:fixed;
 top:10px;
-left:12px;
-right:12px;
+left:10px;
+right:10px;
 z-index:999;
 display:flex;
 flex-direction:column;
@@ -43,11 +43,12 @@ gap:8px;
 .title-box{
 background:rgba(15,23,42,.92);
 padding:10px 14px;
-border-radius:16px;
+border-radius:18px;
 text-align:center;
 font-size:22px;
 font-weight:800;
 color:#fcd34d;
+backdrop-filter:blur(6px);
 }
 
 .panel{
@@ -69,9 +70,9 @@ text-decoration:none;
 
 .bottom{
 position:fixed;
-left:12px;
-right:12px;
-bottom:12px;
+left:10px;
+right:10px;
+bottom:10px;
 z-index:999;
 display:flex;
 flex-direction:column;
@@ -91,7 +92,7 @@ font-size:14px;
 .rss span{
 display:inline-block;
 padding-left:100%;
-animation:scroll 48s linear infinite;
+animation:scroll 55s linear infinite;
 }
 
 @keyframes scroll{
@@ -110,10 +111,10 @@ border-radius:16px;
 
 .place-title{
 font-family:Arial, sans-serif;
-font-size:16px;
+font-size:15px;
 font-weight:700;
 color:#111827;
-margin-bottom:6px;
+margin-bottom:5px;
 }
 
 .popup-link{
@@ -122,6 +123,45 @@ font-size:12px;
 color:#475569;
 margin-top:3px;
 text-decoration:underline;
+}
+
+/* IOS */
+.ios .control{
+border-radius:22px;
+padding:12px 16px;
+font-size:15px;
+}
+
+.ios .title-box{
+font-size:24px;
+padding-top:14px;
+padding-bottom:14px;
+}
+
+/* Android */
+.android .control{
+padding:12px 14px;
+font-size:14px;
+box-shadow:0 2px 6px rgba(0,0,0,.25);
+}
+
+.android .title-box{
+letter-spacing:.3px;
+}
+
+/* Desktop */
+.desktop .top-wrap{
+left:20px;
+right:20px;
+}
+
+.desktop .bottom{
+left:20px;
+right:20px;
+}
+
+.desktop .title-box{
+font-size:28px;
 }
 </style>
 </head>
@@ -167,12 +207,24 @@ Questo spazio è riservato alla pubblicazione delle informazioni sul patrimonio 
 </div>
 
 <div class="logo">
-<strong>PASSAMONTI</strong> COMMUNICATION
+Powered by <strong>PASSAMONTI</strong> NURAGHI
 </div>
 
 </div>
 
 <script>
+/* DEVICE DETECTION */
+const ua = navigator.userAgent;
+
+if(/iPhone|iPad|iPod/i.test(ua)){
+document.body.classList.add('ios');
+}else if(/Android/i.test(ua)){
+document.body.classList.add('android');
+}else{
+document.body.classList.add('desktop');
+}
+
+/* MAPPA FISSA */
 const map = L.map('map',{
 zoomControl:false,
 dragging:false,
@@ -196,6 +248,7 @@ L.tileLayer(
 { attribution:'© OpenStreetMap' }
 ).addTo(map);
 
+/* DATI */
 const comuni = [
 ['Cagliari',39.2238,9.1217,'cagliari'],
 ['Quartu Sant Elena',39.241,9.184,'cagliari'],
