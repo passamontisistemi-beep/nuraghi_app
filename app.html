@@ -4,35 +4,276 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>I Giganti della Sardegna</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#111;color:#fff;display:flex;justify-content:center}
-.phone{width:260px;background:#1b1b1b}
-.header{background:#20304a;padding:14px;text-align:center;font-weight:bold;font-size:14px}
-.nav{display:flex;background:#3b2b1d;color:#f5d08a;font-size:12px}
-.nav div{padding:6px 8px;border-right:1px solid #6b553d}.nav .flag{margin-left:auto}
-.map{position:relative;background:#cfe8ef;height:520px;overflow:hidden}
-.map img{width:100%;height:100%;object-fit:cover;opacity:.9}
-.dot,.ring{position:absolute;width:12px;height:12px;border-radius:50%;transform:translate(-50%,-50%)}
-.dot.red{background:#e74c3c}.dot.green{background:#2ecc71}.dot.orange{background:#f39c12}.dot.blue{background:#3498db}
-.ring{border:2px solid #fff;background:transparent}
-.footer{background:#222;padding:8px;text-align:center;font-size:11px}
+html,body{
+margin:0;
+padding:0;
+height:100%;
+font-family:Arial,sans-serif;
+background:#0f172a;
+overflow:hidden;
+}
+
+#map{
+position:fixed;
+inset:0;
+z-index:1;
+}
+
+.top{
+position:fixed;
+top:10px;
+left:10px;
+right:10px;
+z-index:999;
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+.title{
+background:rgba(15,23,42,.92);
+color:#fcd34d;
+font-size:22px;
+font-weight:800;
+text-align:center;
+padding:12px;
+border-radius:18px;
+}
+
+.menu{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+justify-content:center;
+}
+
+.ctrl{
+background:rgba(15,23,42,.92);
+color:#fff;
+border:none;
+padding:10px 14px;
+border-radius:16px;
+font-size:14px;
+text-decoration:none;
+}
+
+.bottom{
+position:fixed;
+left:10px;
+right:10px;
+bottom:10px;
+z-index:999;
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+.rss{
+background:rgba(15,23,42,.92);
+padding:10px;
+border-radius:16px;
+overflow:hidden;
+white-space:nowrap;
+color:#cbd5e1;
+font-size:14px;
+}
+
+.rss span{
+display:inline-block;
+padding-left:100%;
+animation:scroll 55s linear infinite;
+}
+
+@keyframes scroll{
+0%{transform:translateX(0)}
+100%{transform:translateX(-100%)}
+}
+
+.logo{
+background:rgba(15,23,42,.92);
+padding:10px;
+border-radius:16px;
+text-align:center;
+color:#94a3b8;
+font-size:13px;
+}
+
+.place-title{
+font-size:15px;
+font-weight:700;
+margin-bottom:6px;
+color:#111827;
+}
 </style>
-</head><body><div class='phone'>
-<div class='header'>I Giganti della Sardegna</div>
-<div class='nav'><div>Home</div><div>Seleziona area</div><div class='flag'>🇮🇹</div></div>
-<div class='map'>
-<img src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Sardinia_relief_location_map.jpg/512px-Sardinia_relief_location_map.jpg'>
-<div class='dot red' style='left:65%;top:18%'></div>
-<div class='dot green' style='left:30%;top:25%'></div>
-<div class='dot blue' style='left:78%;top:38%'></div>
-<div class='dot orange' style='left:48%;top:48%'></div>
-<div class='dot red' style='left:60%;top:63%'></div>
-<div class='dot green' style='left:25%;top:70%'></div>
-<div class='dot orange' style='left:40%;top:82%'></div>
-<div class='ring' style='left:68%;top:20%'></div>
-<div class='ring' style='left:34%;top:27%'></div>
-<div class='ring' style='left:62%;top:65%'></div>
-<div class='ring' style='left:42%;top:84%'></div>
+</head>
+
+<body>
+
+<div class="top">
+<div class="title">I Giganti della Sardegna</div>
+
+<div class="menu">
+<a href="index.html" class="ctrl">Home</a>
+
+<select id="area" class="ctrl">
+<option value="all">Seleziona area</option>
+<option value="nord">Nord</option>
+<option value="centro">Centro</option>
+<option value="sud">Sud</option>
+</select>
+
+<button id="gpsBtn" class="ctrl">GPS 100km</button>
+
+<a href="mailto:info@cooperativa.it" class="ctrl">Dagli voce</a>
 </div>
-<div class='footer'>Ultime notizie ed eventi dei comuni limitrofi</div>
-</div></body></html>
+</div>
+
+<div id="map"></div>
+
+<div class="bottom">
+<div class="rss">
+<span>
+Sistema operativo culturale della Sardegna • Nuraghi • Domus de Janas • Borghi • Comuni • Turismo • Patrimonio •
+</span>
+</div>
+
+<div class="logo">
+<strong>PASSAMONTI</strong>_COMMUNICATION
+</div>
+</div>
+
+<script>
+const map=L.map('map',{
+zoomControl:false
+}).setView([40.05,9.0],8);
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{attribution:'© OpenStreetMap'}
+).addTo(map);
+
+const nuraghi=[
+["Su Nuraxi",39.704,9.004,"sud"],
+["Santu Antine",40.504,8.773,"nord"],
+["Losa",40.126,8.847,"centro"],
+["Arrubiu",39.693,9.250,"sud"],
+["Palmavera",40.596,8.285,"nord"],
+["Seruci",39.255,8.518,"sud"]
+];
+
+const comuni=[
+["Cagliari",39.2238,9.1217,"sud"],
+["Sassari",40.7267,8.5597,"nord"],
+["Nuoro",40.3211,9.3308,"centro"],
+["Oristano",39.9036,8.5920,"centro"]
+];
+
+let layers=[];
+
+function draw(filter="all"){
+layers.forEach(l=>map.removeLayer(l));
+layers=[];
+
+nuraghi.forEach(n=>{
+if(filter!=="all" && n[3]!==filter)return;
+
+const m=L.circleMarker([n[1],n[2]],{
+radius:10,
+color:"#ef4444",
+fillColor:"#ef4444",
+fillOpacity:1
+}).addTo(map);
+
+m.bindPopup("<div class='place-title'>"+n[0]+"</div>");
+layers.push(m);
+});
+
+comuni.forEach(c=>{
+if(filter!=="all" && c[3]!==filter)return;
+
+const m=L.circleMarker([c[1],c[2]],{
+radius:6,
+color:"#3b82f6",
+fillColor:"#3b82f6",
+fillOpacity:1
+}).addTo(map);
+
+m.bindPopup("<div class='place-title'>"+c[0]+"</div>");
+layers.push(m);
+});
+}
+
+draw();
+
+document.getElementById("area").onchange=(e)=>{
+draw(e.target.value);
+};
+
+function beep(){
+const ctx=new(window.AudioContext||window.webkitAudioContext)();
+const osc=ctx.createOscillator();
+const gain=ctx.createGain();
+osc.frequency.value=880;
+gain.gain.value=.03;
+osc.connect(gain);
+gain.connect(ctx.destination);
+osc.start();
+osc.stop(ctx.currentTime+.12);
+}
+
+function distKm(a,b,c,d){
+const R=6371;
+const dLat=(c-a)*Math.PI/180;
+const dLon=(d-b)*Math.PI/180;
+const x=Math.sin(dLat/2)**2+
+Math.cos(a*Math.PI/180)*
+Math.cos(c*Math.PI/180)*
+Math.sin(dLon/2)**2;
+return 2*R*Math.asin(Math.sqrt(x));
+}
+
+document.getElementById("gpsBtn").onclick=()=>{
+if(!navigator.geolocation)return;
+
+navigator.geolocation.getCurrentPosition(pos=>{
+const lat=pos.coords.latitude;
+const lon=pos.coords.longitude;
+
+beep();
+
+const vicini=nuraghi.filter(n=>distKm(lat,lon,n[1],n[2])<=100);
+
+layers.forEach(l=>map.removeLayer(l));
+layers=[];
+
+vicini.forEach(n=>{
+const m=L.circleMarker([n[1],n[2]],{
+radius:10,
+color:"#ef4444",
+fillColor:"#ef4444",
+fillOpacity:1
+}).addTo(map);
+
+m.bindPopup("<div class='place-title'>"+n[0]+"</div>");
+layers.push(m);
+});
+
+if(vicini.length){
+const group=L.featureGroup(
+vicini.map(n=>L.marker([n[1],n[2]]))
+);
+map.fitBounds(group.getBounds().pad(.4));
+}else{
+map.setView([lat,lon],10);
+}
+});
+};
+</script>
+
+</body>
+</html>
