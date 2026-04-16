@@ -13,30 +13,18 @@ html,body{
 margin:0;
 padding:0;
 height:100%;
-font-family:Arial,sans-serif;
-background:#0f172a;
 overflow:hidden;
+font-family:Arial,sans-serif;
+background:#08111f;
 }
-
-#map{
-position:fixed;
-inset:0;
-z-index:1;
-}
+#map{position:fixed;inset:0;z-index:1;}
 
 .top{
-position:fixed;
-top:10px;
-left:10px;
-right:10px;
-z-index:999;
-display:flex;
-flex-direction:column;
-gap:8px;
+position:fixed;top:10px;left:10px;right:10px;z-index:999;
+display:flex;flex-direction:column;gap:8px;
 }
-
 .title{
-background:rgba(15,23,42,.92);
+background:rgba(8,17,31,.92);
 color:#fcd34d;
 font-size:22px;
 font-weight:800;
@@ -44,70 +32,42 @@ text-align:center;
 padding:12px;
 border-radius:18px;
 }
-
 .menu{
-display:flex;
-flex-wrap:wrap;
-gap:8px;
-justify-content:center;
+display:flex;gap:8px;justify-content:center;flex-wrap:wrap;
 }
-
 .ctrl{
-background:rgba(15,23,42,.92);
+background:rgba(60,35,10,.92);
 color:#fff;
 border:none;
 padding:10px 14px;
-border-radius:16px;
+border-radius:14px;
 font-size:14px;
 text-decoration:none;
 }
 
 .bottom{
-position:fixed;
-left:10px;
-right:10px;
-bottom:10px;
-z-index:999;
-display:flex;
-flex-direction:column;
-gap:8px;
+position:fixed;left:10px;right:10px;bottom:10px;z-index:999;
+display:flex;flex-direction:column;gap:8px;
 }
-
-.rss{
-background:rgba(15,23,42,.92);
+.rss,.logo{
+background:rgba(8,17,31,.92);
+color:#fff;
 padding:10px;
-border-radius:16px;
-overflow:hidden;
-white-space:nowrap;
-color:#cbd5e1;
-font-size:14px;
+border-radius:14px;
+text-align:center;
+font-size:13px;
 }
-
+.rss{
+overflow:hidden;white-space:nowrap;
+}
 .rss span{
 display:inline-block;
 padding-left:100%;
-animation:scroll 55s linear infinite;
+animation:scroll 35s linear infinite;
 }
-
 @keyframes scroll{
 0%{transform:translateX(0)}
 100%{transform:translateX(-100%)}
-}
-
-.logo{
-background:rgba(15,23,42,.92);
-padding:10px;
-border-radius:16px;
-text-align:center;
-color:#94a3b8;
-font-size:13px;
-}
-
-.place-title{
-font-size:15px;
-font-weight:700;
-margin-bottom:6px;
-color:#111827;
 }
 </style>
 </head>
@@ -128,7 +88,6 @@ color:#111827;
 </select>
 
 <button id="gpsBtn" class="ctrl">GPS 100km</button>
-
 <a href="mailto:info@cooperativa.it" class="ctrl">Dagli voce</a>
 </div>
 </div>
@@ -137,139 +96,94 @@ color:#111827;
 
 <div class="bottom">
 <div class="rss">
-<span>
-Sistema operativo culturale della Sardegna • Nuraghi • Domus de Janas • Borghi • Comuni • Turismo • Patrimonio •
-</span>
+<span>Nuraghi • Domus de Janas • Borghi • Comuni • Turismo • Cultura • Sardegna •</span>
 </div>
-
-<div class="logo">
-<strong>PASSAMONTI</strong>_COMMUNICATION
-</div>
+<div class="logo"><strong>PASSAMONTI</strong>_COMMUNICATION</div>
 </div>
 
 <script>
-const map=L.map('map',{
-zoomControl:false
-}).setView([40.05,9.0],8);
+const map=L.map('map',{zoomControl:false}).setView([40.05,9.0],8);
 
+/* MAPPA PIÙ BELLA */
 L.tileLayer(
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-{attribution:'© OpenStreetMap'}
+'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+{maxZoom:19,attribution:'© OpenStreetMap'}
 ).addTo(map);
 
-const nuraghi=[
-["Su Nuraxi",39.704,9.004,"sud"],
-["Santu Antine",40.504,8.773,"nord"],
-["Losa",40.126,8.847,"centro"],
-["Arrubiu",39.693,9.250,"sud"],
-["Palmavera",40.596,8.285,"nord"],
-["Seruci",39.255,8.518,"sud"]
-];
+const punti=[
+["Su Nuraxi",39.704,9.004,"#ef4444","sud"],
+["Arrubiu",39.693,9.250,"#ef4444","sud"],
+["Santu Antine",40.504,8.773,"#ef4444","nord"],
+["Losa",40.126,8.847,"#ef4444","centro"],
 
-const comuni=[
-["Cagliari",39.2238,9.1217,"sud"],
-["Sassari",40.7267,8.5597,"nord"],
-["Nuoro",40.3211,9.3308,"centro"],
-["Oristano",39.9036,8.5920,"centro"]
+["Anghelu Ruju",40.627,8.319,"#f59e0b","nord"],
+["Montessu",39.124,8.665,"#f59e0b","sud"],
+
+["Bosa",40.300,8.500,"#10b981","centro"],
+["Castelsardo",40.920,8.710,"#10b981","nord"],
+
+["Cagliari",39.223,9.121,"#3b82f6","sud"],
+["Nuoro",40.321,9.330,"#3b82f6","centro"]
 ];
 
 let layers=[];
 
-function draw(filter="all"){
-layers.forEach(l=>map.removeLayer(l));
+function draw(f="all"){
+layers.forEach(x=>map.removeLayer(x));
 layers=[];
 
-nuraghi.forEach(n=>{
-if(filter!=="all" && n[3]!==filter)return;
+punti.forEach((p,i)=>{
+if(f!="all" && p[4]!=f)return;
 
-const m=L.circleMarker([n[1],n[2]],{
-radius:10,
-color:"#ef4444",
-fillColor:"#ef4444",
-fillOpacity:1
+const lat=p[1]+(i%2)*0.02;
+const lon=p[2]+(i%3)*0.02;
+
+const m=L.circleMarker([lat,lon],{
+radius:9,
+color:p[3],
+fillColor:p[3],
+fillOpacity:1,
+weight:2
 }).addTo(map);
 
-m.bindPopup("<div class='place-title'>"+n[0]+"</div>");
-layers.push(m);
-});
-
-comuni.forEach(c=>{
-if(filter!=="all" && c[3]!==filter)return;
-
-const m=L.circleMarker([c[1],c[2]],{
-radius:6,
-color:"#3b82f6",
-fillColor:"#3b82f6",
-fillOpacity:1
-}).addTo(map);
-
-m.bindPopup("<div class='place-title'>"+c[0]+"</div>");
+m.bindPopup("<b>"+p[0]+"</b>");
 layers.push(m);
 });
 }
-
 draw();
 
-document.getElementById("area").onchange=(e)=>{
-draw(e.target.value);
-};
-
-function beep(){
-const ctx=new(window.AudioContext||window.webkitAudioContext)();
-const osc=ctx.createOscillator();
-const gain=ctx.createGain();
-osc.frequency.value=880;
-gain.gain.value=.03;
-osc.connect(gain);
-gain.connect(ctx.destination);
-osc.start();
-osc.stop(ctx.currentTime+.12);
-}
+document.getElementById("area").onchange=e=>draw(e.target.value);
 
 function distKm(a,b,c,d){
 const R=6371;
 const dLat=(c-a)*Math.PI/180;
 const dLon=(d-b)*Math.PI/180;
 const x=Math.sin(dLat/2)**2+
-Math.cos(a*Math.PI/180)*
-Math.cos(c*Math.PI/180)*
+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*
 Math.sin(dLon/2)**2;
 return 2*R*Math.asin(Math.sqrt(x));
 }
 
 document.getElementById("gpsBtn").onclick=()=>{
-if(!navigator.geolocation)return;
-
 navigator.geolocation.getCurrentPosition(pos=>{
 const lat=pos.coords.latitude;
 const lon=pos.coords.longitude;
 
-beep();
+const vicini=punti.filter(p=>distKm(lat,lon,p[1],p[2])<=100);
 
-const vicini=nuraghi.filter(n=>distKm(lat,lon,n[1],n[2])<=100);
-
-layers.forEach(l=>map.removeLayer(l));
+layers.forEach(x=>map.removeLayer(x));
 layers=[];
 
-vicini.forEach(n=>{
-const m=L.circleMarker([n[1],n[2]],{
-radius:10,
-color:"#ef4444",
-fillColor:"#ef4444",
-fillOpacity:1
-}).addTo(map);
-
-m.bindPopup("<div class='place-title'>"+n[0]+"</div>");
+vicini.forEach(p=>{
+const m=L.circleMarker([p[1],p[2]],{
+radius:10,color:p[3],fillColor:p[3],fillOpacity:1
+}).addTo(map).bindPopup("<b>"+p[0]+"</b>");
 layers.push(m);
 });
 
 if(vicini.length){
-const group=L.featureGroup(
-vicini.map(n=>L.marker([n[1],n[2]]))
-);
-map.fitBounds(group.getBounds().pad(.4));
-}else{
-map.setView([lat,lon],10);
+const g=L.featureGroup(vicini.map(v=>L.marker([v[1],v[2]])));
+map.fitBounds(g.getBounds().pad(.4));
 }
 });
 };
