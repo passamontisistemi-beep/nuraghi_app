@@ -18,74 +18,40 @@ overflow:hidden;
 background:#0f172a;
 font-family:Arial,sans-serif;
 }
-
-#map{
-height:100vh;
-width:100vw;
-z-index:1;
-}
-
-.leaflet-container{
-background:#0f172a;
-}
+#map{height:100vh;width:100vw;z-index:1;}
+.leaflet-container{background:#0f172a;}
 
 .top-wrap{
-position:fixed;
-top:10px;
-left:10px;
-right:10px;
-z-index:999;
-display:flex;
-flex-direction:column;
-gap:8px;
+position:fixed;top:10px;left:10px;right:10px;z-index:999;
+display:flex;flex-direction:column;gap:8px;
 }
 
 .title-box{
 background:rgba(15,23,42,.92);
-padding:10px 14px;
-border-radius:18px;
-text-align:center;
-font-size:22px;
-font-weight:800;
-color:#fcd34d;
+padding:10px 14px;border-radius:18px;text-align:center;
+font-size:22px;font-weight:800;color:#fcd34d;
 }
 
 .panel{
-display:flex;
-gap:8px;
-flex-wrap:wrap;
-justify-content:center;
+display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
 }
 
 .control{
 background:rgba(15,23,42,.92);
-color:#fff;
-border:none;
-padding:10px 14px;
-border-radius:16px;
-font-size:14px;
-text-decoration:none;
+color:#fff;border:none;padding:10px 14px;
+border-radius:16px;font-size:14px;text-decoration:none;
 }
 
 .bottom{
-position:fixed;
-left:10px;
-right:10px;
-bottom:10px;
-z-index:999;
-display:flex;
-flex-direction:column;
-gap:8px;
+position:fixed;left:10px;right:10px;bottom:10px;z-index:999;
+display:flex;flex-direction:column;gap:8px;
 }
 
 .rss{
-overflow:hidden;
-white-space:nowrap;
+overflow:hidden;white-space:nowrap;
 background:rgba(15,23,42,.92);
-padding:10px;
-border-radius:16px;
-color:#cbd5e1;
-font-size:14px;
+padding:10px;border-radius:16px;
+color:#cbd5e1;font-size:14px;
 }
 
 .rss span{
@@ -100,28 +66,18 @@ animation:scroll 55s linear infinite;
 }
 
 .logo{
-text-align:center;
-font-size:13px;
-color:#94a3b8;
+text-align:center;font-size:13px;color:#94a3b8;
 background:rgba(15,23,42,.92);
-padding:10px;
-border-radius:16px;
+padding:10px;border-radius:16px;
 }
 
 .place-title{
-font-family:Arial,sans-serif;
-font-size:15px;
-font-weight:700;
-color:#111827;
-margin-bottom:5px;
+font-size:15px;font-weight:700;color:#111827;margin-bottom:5px;
 }
 
 .popup-link{
-display:block;
-font-size:12px;
-color:#475569;
-margin-top:3px;
-text-decoration:underline;
+display:block;font-size:12px;color:#475569;
+margin-top:3px;text-decoration:underline;
 }
 </style>
 </head>
@@ -130,13 +86,13 @@ text-decoration:underline;
 
 <div class="top-wrap">
 
-<div class="title-box">
+<div class="title-box" id="titleText">
 I Giganti della Sardegna
 </div>
 
 <div class="panel">
 
-<a href="index.html" class="control">Home</a>
+<a href="index.html" class="control" id="homeBtn">Home</a>
 
 <select id="area" class="control">
 <option value="all">Seleziona area</option>
@@ -147,7 +103,17 @@ I Giganti della Sardegna
 <option value="sud sardegna">Sud Sardegna</option>
 </select>
 
-<a href="mailto:info@cooperativa.it?subject=Dagli Voce" class="control">
+<select id="lang" class="control">
+<option value="it">IT</option>
+<option value="en">EN</option>
+<option value="fr">FR</option>
+<option value="de">DE</option>
+<option value="es">ES</option>
+</select>
+
+<button id="gpsBtn" class="control">GPS 50km</button>
+
+<a href="mailto:info@cooperativa.it?subject=Dagli Voce" class="control" id="voiceBtn">
 Dagli voce
 </a>
 
@@ -159,7 +125,7 @@ Dagli voce
 <div class="bottom">
 
 <div class="rss">
-<span>
+<span id="rssText">
 Questo spazio è riservato alla pubblicazione delle informazioni sul patrimonio enogastronomico di quell'area e le ultime notizie ed eventi acquisite dal sito AGID dei comuni limitrofi •
 </span>
 </div>
@@ -171,7 +137,53 @@ Questo spazio è riservato alla pubblicazione delle informazioni sul patrimonio 
 </div>
 
 <script>
-const map = L.map('map',{
+const texts = {
+it:{
+title:"I Giganti della Sardegna",
+voice:"Dagli voce",
+gps:"GPS 50km",
+rss:"Questo spazio è riservato alla pubblicazione delle informazioni sul patrimonio enogastronomico di quell'area e le ultime notizie ed eventi acquisite dal sito AGID dei comuni limitrofi •"
+},
+en:{
+title:"The Giants of Sardinia",
+voice:"Give Voice",
+gps:"GPS 50km",
+rss:"This area is reserved for food heritage information and latest news from nearby municipalities •"
+},
+fr:{
+title:"Les Géants de la Sardaigne",
+voice:"Donnez Voix",
+gps:"GPS 50km",
+rss:"Espace dédié au patrimoine gastronomique et aux dernières nouvelles des communes voisines •"
+},
+de:{
+title:"Die Giganten Sardiniens",
+voice:"Stimme geben",
+gps:"GPS 50km",
+rss:"Bereich für gastronomisches Erbe und aktuelle Nachrichten der Nachbargemeinden •"
+},
+es:{
+title:"Los Gigantes de Cerdeña",
+voice:"Dar voz",
+gps:"GPS 50km",
+rss:"Espacio dedicado al patrimonio gastronómico y últimas noticias de municipios cercanos •"
+}
+};
+
+let currentLang="it";
+
+function applyLang(l){
+currentLang=l;
+titleText.textContent=texts[l].title;
+voiceBtn.textContent=texts[l].voice;
+gpsBtn.textContent=texts[l].gps;
+rssText.textContent=texts[l].rss;
+}
+
+lang.onchange=(e)=>applyLang(e.target.value);
+
+/* MAPPA */
+const map=L.map('map',{
 zoomControl:false,
 dragging:false,
 touchZoom:false,
@@ -181,68 +193,64 @@ boxZoom:false,
 keyboard:false
 });
 
-const bounds = L.latLngBounds(
+const sardiniaBounds=L.latLngBounds(
 [38.75,7.95],
 [41.35,10.10]
 );
 
-map.fitBounds(bounds);
+map.fitBounds(sardiniaBounds);
 
 L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 {attribution:'© OpenStreetMap'}
 ).addTo(map);
 
-const comuni = [
+/* DATI */
+const comuni=[
 ['Cagliari',39.2238,9.1217,'cagliari'],
-['Quartu Sant Elena',39.241,9.184,'cagliari'],
 ['Sassari',40.7267,8.5597,'sassari'],
-['Alghero',40.557,8.319,'sassari'],
-['Torralba',40.516,8.768,'sassari'],
 ['Nuoro',40.3211,9.3308,'nuoro'],
-['Dorgali',40.292,9.588,'nuoro'],
 ['Oristano',39.9036,8.5920,'oristano'],
-['Cabras',39.930,8.533,'oristano'],
-['Abbasanta',40.126,8.820,'oristano'],
 ['Barumini',39.705,9.005,'sud sardegna'],
-['Carbonia',39.167,8.522,'sud sardegna'],
-['Iglesias',39.309,8.537,'sud sardegna']
+['Alghero',40.557,8.319,'sassari']
 ];
 
-const nuraghi = [
-['Su Nuraxi',39.704,9.002,'sud sardegna'],
-['Santu Antine',40.504,8.773,'sassari'],
-['Losa',40.126,8.847,'oristano'],
-['Arrubiu',39.495,9.230,'sud sardegna'],
-['Palmavera',40.596,8.285,'sassari'],
-['Genna Maria',39.645,8.969,'sud sardegna'],
-['Majori',41.079,9.176,'sassari'],
-['Seruci',39.255,8.518,'sud sardegna'],
-['Nolza',39.540,9.270,'sud sardegna'],
-['Aiga',40.210,9.110,'nuoro'],
-['Oes',40.470,8.930,'sassari'],
-['Is Paras',39.670,8.950,'oristano']
+const nuraghi=[
+['Su Nuraxi',39.704,9.002,'sud sardegna',true],
+['Santu Antine',40.504,8.773,'sassari',true],
+['Losa',40.126,8.847,'oristano',true],
+['Arrubiu',39.495,9.230,'sud sardegna',true],
+['Palmavera',40.596,8.285,'sassari',true],
+['Genna Maria',39.645,8.969,'sud sardegna',true],
+['Seruci',39.255,8.518,'sud sardegna',true],
+['Is Paras',39.670,8.950,'oristano',true]
 ];
 
 let layers=[];
 
+function wikiBase(){
+return currentLang==="it"
+? "https://it.wikipedia.org/wiki/"
+: "https://" + currentLang + ".wikipedia.org/wiki/";
+}
+
 function popupComune(nome){
 return `
 <div class="place-title">${nome}</div>
-<a class="popup-link" target="_blank" href="https://it.wikipedia.org/wiki/${encodeURIComponent(nome)}">Wikipedia</a>
-<a class="popup-link" target="_blank" href="https://it.wikivoyage.org/wiki/${encodeURIComponent(nome)}">Wikivoyage</a>
-<a class="popup-link" target="_blank" href="https://www.wikiloc.com/wikiloc/find.do?q=${encodeURIComponent(nome)}">Wikiloc</a>
+<a class="popup-link" target="_blank"
+href="${wikiBase()}${encodeURIComponent(nome)}">Wikipedia</a>
 `;
 }
 
 function popupNuraghe(nome){
 return `
 <div class="place-title">${nome}</div>
-<a class="popup-link" target="_blank" href="https://it.wikipedia.org/wiki/${encodeURIComponent(nome)}">Wikipedia</a>
+<a class="popup-link" target="_blank"
+href="${wikiBase()}${encodeURIComponent(nome)}">Wikipedia</a>
 `;
 }
 
-function draw(filter='all'){
+function draw(filter='all', customList=null){
 layers.forEach(l=>map.removeLayer(l));
 layers=[];
 
@@ -250,23 +258,19 @@ comuni.forEach(c=>{
 if(filter!=='all' && c[3]!==filter) return;
 
 const m=L.circleMarker([c[1],c[2]],{
-radius:6,
-color:'#3b82f6',
-fillColor:'#3b82f6',
-fillOpacity:1
+radius:6,color:'#3b82f6',fillColor:'#3b82f6',fillOpacity:1
 }).addTo(map).bindPopup(popupComune(c[0]));
 
 layers.push(m);
 });
 
-nuraghi.forEach(n=>{
+const source = customList || nuraghi;
+
+source.forEach(n=>{
 if(filter!=='all' && n[3]!==filter) return;
 
 const m=L.circleMarker([n[1],n[2]],{
-radius:11,
-color:'#ef4444',
-fillColor:'#ef4444',
-fillOpacity:1
+radius:11,color:'#ef4444',fillColor:'#ef4444',fillOpacity:1
 }).addTo(map).bindPopup(popupNuraghe(n[0]));
 
 layers.push(m);
@@ -275,8 +279,63 @@ layers.push(m);
 
 draw();
 
-document.getElementById('area').onchange=(e)=>{
-draw(e.target.value);
+area.onchange=(e)=>draw(e.target.value);
+
+/* BIP */
+function beep(){
+const ctx = new (window.AudioContext||window.webkitAudioContext)();
+const osc = ctx.createOscillator();
+const gain = ctx.createGain();
+osc.type="sine";
+osc.frequency.value=880;
+gain.gain.value=0.03;
+osc.connect(gain);
+gain.connect(ctx.destination);
+osc.start();
+osc.stop(ctx.currentTime+0.15);
+}
+
+/* DISTANZA KM */
+function distKm(lat1,lon1,lat2,lon2){
+const R=6371;
+const dLat=(lat2-lat1)*Math.PI/180;
+const dLon=(lon2-lon1)*Math.PI/180;
+const a=
+Math.sin(dLat/2)**2+
+Math.cos(lat1*Math.PI/180)*
+Math.cos(lat2*Math.PI/180)*
+Math.sin(dLon/2)**2;
+return 2*R*Math.asin(Math.sqrt(a));
+}
+
+/* GPS 50 KM */
+gpsBtn.onclick=()=>{
+if(!navigator.geolocation){
+alert("GPS non disponibile");
+return;
+}
+
+navigator.geolocation.getCurrentPosition(pos=>{
+const lat=pos.coords.latitude;
+const lon=pos.coords.longitude;
+
+beep();
+
+const vicini = nuraghi.filter(n=>{
+return n[4]===true && distKm(lat,lon,n[1],n[2])<=50;
+});
+
+draw('all',vicini);
+
+if(vicini.length>0){
+const group = L.featureGroup(
+vicini.map(n=>L.marker([n[1],n[2]]))
+);
+map.fitBounds(group.getBounds().pad(0.4));
+}else{
+map.setView([lat,lon],10);
+}
+});
 };
 </script>
 
